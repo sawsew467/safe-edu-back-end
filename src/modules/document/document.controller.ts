@@ -20,6 +20,7 @@ import { UpdateDocumentFileDto } from './dto/update-document.dto';
 import { UploadFileService } from 'src/services/file-upload.service';
 import { IFile } from 'src/interfaces/file.interface';
 import { FileUploadDto } from '@modules/topic/dto/file-upload.dto';
+import { DocumentUploadDto } from './dto/upload-document.dto';
 
 
 @ApiTags('Document Files')
@@ -32,28 +33,32 @@ export class DocumentFilesController {
 
     @Post('upload')
     @ApiConsumes('multipart/form-data')
-    @ApiBody({
-        description: 'File upload',
-        type: FileUploadDto,
-    })
-
+    @ApiBody({ type: DocumentUploadDto })
     @UseInterceptors(FileInterceptor('image'))
-    async uploadFile(@UploadedFile() file: IFile) {
+    async uploadFile(
+        @Body() body: DocumentUploadDto,
+        @UploadedFile() file: IFile,
+    ) {
         try {
             const uploadResult = await this.uploadFileService.uploadFile(file);
             const sizeInKB = Number((file.size / 1024).toFixed(2));
-            const fileName  = file.originalname;
+            const fileName = file.originalname;
+
             const createDto: CreateDocumentFileDto = {
-                file_name: fileName ,
+                document_name: body.document_name,
+                file_name: fileName,
                 file_url: uploadResult,
                 file_size: sizeInKB,
+                isUploaded: false,
             };
-            const createdDocument = await this.documentFilesService.create(createDto);
+
+            const created = await this.documentFilesService.create(createDto);
+
             return {
                 statusCode: HttpStatus.OK,
                 message: 'File uploaded successfully',
                 success: true,
-                data: createdDocument,
+                data: created,
             };
         } catch (error) {
             throw new HttpException(
@@ -67,6 +72,7 @@ export class DocumentFilesController {
             );
         }
     }
+
 
     @Post()
     async create(@Body() dto: CreateDocumentFileDto) {
