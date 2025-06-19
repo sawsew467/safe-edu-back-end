@@ -8,18 +8,18 @@ export class ResetTokenService {
   constructor(
     @InjectModel(ResetToken.name)
     private tokenModel: Model<ResetToken>,
-  ) {}
+  ) { }
 
-  async createOtp(data: { email: string; otp: string;}) {
+  async createOtp(data: { email: string; otp: string; }) {
     try {
       const otp = await this.tokenModel.create(data);
       return otp;
     } catch (error) {
       throw new BadRequestException({
-              status: HttpStatus.BAD_REQUEST,
-              message: 'Đã có lỗi xảy ra khi tạo otp, vui lòng thử lại sau',
-              details: `Có lỗi xảy ra khi tạo otp: ${error.message}`,
-            });
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Đã có lỗi xảy ra khi tạo otp, vui lòng thử lại sau',
+        details: `Có lỗi xảy ra khi tạo otp: ${error.message}`,
+      });
     }
   }
 
@@ -29,7 +29,8 @@ export class ResetTokenService {
     });
   }
 
-  async deleteOtp(otp: string) {
+  async deleteOtp(otp: string): Promise<any> {
     return this.tokenModel.deleteOne({ otp });
   }
+
 }
