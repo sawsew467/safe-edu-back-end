@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Lại Mật Khẩu - SafeEdu</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .logo {
+            max-width: 150px;
+            height: auto;
+        }
+        .content {
+            padding: 30px 20px;
+            line-height: 1.6;
+        }
+        .otp-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .otp-code {
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            color: #7cb342;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #777777;
+            border-top: 1px solid #eeeeee;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #7cb342;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .note {
+            font-size: 14px;
+            color: #666666;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://www.safe-edu.site/_next/image?url=%2Fimages%2Flogo%2Flogo.png&w=256&q=75" alt="SafeEdu Logo" class="logo">
+            <h1 style="color: #7cb342;">SafeEdu</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Đặt Lại Mật Khẩu</h2>
+            
+            <p>Xin chào,</p>
+            
+            <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn trên SafeEdu với địa chỉ email: <strong>{{Email}}</strong></p>
+            
+            <p>Vui lòng sử dụng mã OTP dưới đây để xác nhận việc đặt lại mật khẩu:</p>
+            
+            <div class="otp-container">
+                <div class="otp-code">{{otp_code}}</div>
+            </div>
+            
+            <p>Mã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này hoặc liên hệ với chúng tôi nếu bạn có bất kỳ thắc mắc nào.</p>
+            
+            <div class="note">
+                <p><strong>Lưu ý:</strong> Vì lý do bảo mật, vui lòng không chia sẻ mã OTP này với bất kỳ ai. Đội ngũ SafeEdu sẽ không bao giờ yêu cầu bạn cung cấp mã OTP qua điện thoại hoặc email.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 SafeEdu. Tất cả các quyền được bảo lưu.</p>
+            <p>Tài nguyên giáo dục về phòng chống ma túy, bạo lực học đường và bình đẳng giới</p>
+            <p><a href="https://www.safe-edu.site" style="color: #7cb342;">www.safe-edu.site</a></p>
+        </div>
+    </div>
+</body>
+</html>
