@@ -19,14 +19,21 @@ export class DocumentFile extends BaseEntity {
   constructor(documentFile: { 
     file_name?: string,
     file_url?: string, 
-    file_size?: number 
+    file_size?: number,
+    isUploaded?: boolean,
+    document_name: string
   }) 
   {
     super();
+    this.document_name = documentFile?.document_name;
     this.file_name = documentFile?.file_name
     this.file_url = documentFile?.file_url;
     this.file_size = documentFile?.file_size;
+    this.isUploaded = documentFile?.isUploaded;
   }
+
+  @Prop({})
+  document_name: string;
 
   @Prop({})
   file_name: string;
@@ -39,6 +46,9 @@ export class DocumentFile extends BaseEntity {
 
   @Prop({})
   file_size: number;
+
+  @Prop({default: false})
+  isUploaded: boolean;
 }
 
 export const DocumentFileSchema = SchemaFactory.createForClass(DocumentFile);

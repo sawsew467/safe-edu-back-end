@@ -2,6 +2,8 @@ import { IsNotEmpty, IsUrl } from 'class-validator';
 
 export class CreateDocumentFileDto {
 
+  document_name?: string;
+
   file_name?: string;
 
   @IsNotEmpty({ message: 'Đường dẫn tệp tin không được để trống' })
@@ -9,4 +11,6 @@ export class CreateDocumentFileDto {
   file_url: string;
 
   file_size?: number;
+
+  isUploaded: boolean;
 }
