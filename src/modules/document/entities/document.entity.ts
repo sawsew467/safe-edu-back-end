@@ -47,7 +47,7 @@ export class DocumentFile extends BaseEntity {
   @Prop({})
   file_size: number;
 
-  @Prop({default: false})
+  @Prop()
   isUploaded: boolean;
 }
 
