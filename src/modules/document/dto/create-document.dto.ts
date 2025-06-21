@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsUrl } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsUrl } from 'class-validator';
 
 export class CreateDocumentFileDto {
 
@@ -12,5 +12,7 @@ export class CreateDocumentFileDto {
 
   file_size?: number;
 
+  @IsOptional()
+  @IsBoolean()
   isUploaded: boolean;
 }
