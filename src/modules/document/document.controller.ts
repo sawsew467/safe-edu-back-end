@@ -21,6 +21,7 @@ import { UploadFileService } from 'src/services/file-upload.service';
 import { IFile } from 'src/interfaces/file.interface';
 import { FileUploadDto } from '@modules/topic/dto/file-upload.dto';
 import { DocumentUploadDto } from './dto/upload-document.dto';
+import { DocumentTypeEnum } from './entities/document.entity';
 
 
 @ApiTags('Document Files')
@@ -43,13 +44,14 @@ export class DocumentFilesController {
             const uploadResult = await this.uploadFileService.uploadFile(file);
             const sizeInKB = Number((file.size / 1024).toFixed(2));
             const fileName = file.originalname;
-
+            console.log('body.type', body.type);
             const createDto: CreateDocumentFileDto = {
                 document_name: body.document_name,
                 file_name: fileName,
                 file_url: uploadResult,
                 file_size: sizeInKB,
                 isUploaded: false,
+                type: body.type, // Default to DocumentTypeEnum.REFERENCE if not provided
             };
 
             const created = await this.documentFilesService.create(createDto);
