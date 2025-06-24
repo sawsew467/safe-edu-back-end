@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
+import { DocumentTypeEnum } from '../entities/document.entity';
 
 export class DocumentUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
@@ -8,4 +9,8 @@ export class DocumentUploadDto {
   @ApiProperty()
   @IsNotEmpty({ message: 'Tên tài liệu không được để trống' })
   document_name: string;
+
+  @IsOptional()
+  @IsEnum(DocumentTypeEnum)
+  type?: DocumentTypeEnum;
 }

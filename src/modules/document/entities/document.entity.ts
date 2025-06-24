@@ -5,6 +5,11 @@ import mongoose, { HydratedDocument } from 'mongoose';
 
 export type DocumentFileDocument = HydratedDocument<DocumentFile>;
 
+export enum DocumentTypeEnum {
+  OFFICIAL = 'OFFICIAL',
+  REFERENCE = 'REFERENCE',
+}
+
 @Schema({
   timestamps: {
     createdAt: 'created_at',
@@ -21,7 +26,8 @@ export class DocumentFile extends BaseEntity {
     file_url?: string, 
     file_size?: number,
     isUploaded?: boolean,
-    document_name: string
+    document_name: string,
+    type?: DocumentTypeEnum
   }) 
   {
     super();
@@ -30,6 +36,7 @@ export class DocumentFile extends BaseEntity {
     this.file_url = documentFile?.file_url;
     this.file_size = documentFile?.file_size;
     this.isUploaded = documentFile?.isUploaded;
+    this.type = documentFile?.type ?? DocumentTypeEnum.REFERENCE;
   }
 
   @Prop({})
@@ -49,6 +56,9 @@ export class DocumentFile extends BaseEntity {
 
   @Prop()
   isUploaded: boolean;
+
+  @Prop({ enum: DocumentTypeEnum, default: DocumentTypeEnum.REFERENCE })
+  type: DocumentTypeEnum;
 }
 
 export const DocumentFileSchema = SchemaFactory.createForClass(DocumentFile);

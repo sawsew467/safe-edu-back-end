@@ -1,4 +1,5 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsUrl } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsUrl } from 'class-validator';
+import { DocumentTypeEnum } from '../entities/document.entity';
 
 export class CreateDocumentFileDto {
 
@@ -15,4 +16,8 @@ export class CreateDocumentFileDto {
   @IsOptional()
   @IsBoolean()
   isUploaded: boolean;
+
+  @IsOptional()
+  @IsEnum(DocumentTypeEnum)
+  type?: DocumentTypeEnum;
 }
