@@ -29,10 +29,10 @@ export class EmergencyContact extends BaseEntity {
 	email: string;
 
 	@Prop({
-		required: true,
+		required: false,
 		enum: ['board-of-directors', 'principal', 'vice-principal', 'student-affairs-officer']
 	})
-	role: string;
+	role?: string;
 
 	@Prop({ required: true, default: true })
 	isActive: boolean;
