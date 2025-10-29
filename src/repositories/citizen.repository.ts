@@ -1,36 +1,66 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import mongoose, { FilterQuery, Model, Types } from 'mongoose';
 import { Citizen } from '@modules/citizens/entities/citizen.entity';
 import { CitizensRepositoryInterface } from '@modules/citizens/interfaces/citizens.interfaces';
 import * as moment from 'moment';
 
-
 @Injectable()
 export class CitizensRepository implements CitizensRepositoryInterface {
-    constructor(
-        @InjectModel(Citizen.name) private readonly Citizen_Model: Model<Citizen>,
-    ) {}
-    async findOne(condition: FilterQuery<Citizen>): Promise<Citizen | null> {
-        return await this.Citizen_Model
-			.findOne(condition)
+	constructor(
+		@InjectModel(Citizen.name) private readonly Citizen_Model: Model<Citizen>,
+	) {}
+	async findOne(condition: FilterQuery<Citizen>): Promise<Citizen | null> {
+		return await this.Citizen_Model.findOne(condition)
 			.populate('province')
-			.exec(); 
-    }
+			.exec();
+	}
 
-    async create(data: Partial<Citizen>): Promise<Citizen> {
-        console.log('data:', JSON.stringify(data, null, 2));
-        
-        try {
-            const newCitizen = new this.Citizen_Model(data);
-            const savedCitizen = await newCitizen.save();
-            return savedCitizen;
-          } catch (error) {
-            console.error('Error saving new Citizen:', error.message);
-            throw new BadRequestException('Failed to create Citizen. Please try again.');
-          }
-    }
-    async findAll(
+	async create(data: Partial<Citizen>): Promise<Citizen> {
+		console.log('data:', JSON.stringify(data, null, 2));
+
+		try {
+			const newCitizen = new this.Citizen_Model(data);
+			const savedCitizen = await newCitizen.save();
+			return savedCitizen;
+		} catch (error) {
+			console.error('Error saving new Citizen:', error.message);
+			throw new BadRequestException(
+				'Failed to create Citizen. Please try again.',
+			);
+		}
+	}
+
+	async findByOrgId(organizationId: string): Promise<Citizen[]> {
+		try {
+			const orgId = mongoose.Types.ObjectId.isValid(organizationId)
+				? new mongoose.Types.ObjectId(organizationId)
+				: null;
+
+			if (!orgId) {
+				throw new BadRequestException({
+					status: HttpStatus.BAD_REQUEST,
+					message: 'organizationId không hợp lệ',
+				});
+			}
+
+			const citizens = await this.Citizen_Model.find({
+				organizationId: { $in: [orgId] }, // organizationId là mảng
+				isActive: true,
+				deleted_at: null,
+			});
+
+			return citizens;
+		} catch (error) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'Lỗi khi tìm công dân theo tổ chức.',
+				details: error.message,
+			});
+		}
+	}
+
+	async findAll(
 		searchPhase: string = '',
 		page: number = 1,
 		limit: number = 10,
@@ -58,9 +88,8 @@ export class CitizensRepository implements CitizensRepositoryInterface {
 			.sort({ [sortBy]: sortDirection })
 			.exec();
 
-		const totalItemCount = await this.Citizen_Model.countDocuments(
-			filter,
-		).exec();
+		const totalItemCount =
+			await this.Citizen_Model.countDocuments(filter).exec();
 		const totalPages =
 			totalItemCount > 0 ? Math.ceil(totalItemCount / validLimit) : 1;
 		const itemFrom = totalItemCount === 0 ? 0 : skip + 1;
@@ -76,41 +105,48 @@ export class CitizensRepository implements CitizensRepositoryInterface {
 
 		return response;
 	}
-      
-    async getCitizenWithRole(CitizenId: string): Promise<Citizen | null> {
-        return await this.Citizen_Model
-			.findById(CitizenId)
+
+	async getCitizenWithRole(CitizenId: string): Promise<Citizen | null> {
+		return await this.Citizen_Model.findById(CitizenId)
 			.populate('province')
 			.populate('role')
 			.exec();
-    }
+	}
 
-    async update(id: string, data: Partial<Citizen>): Promise<Citizen | null> {
-        return await this.Citizen_Model.findByIdAndUpdate(id, data, { new: true }).exec();
-    }
+	async update(id: string, data: Partial<Citizen>): Promise<Citizen | null> {
+		return await this.Citizen_Model.findByIdAndUpdate(id, data, {
+			new: true,
+		}).exec();
+	}
 
-    async remove(id: string): Promise<boolean> {
-        const result = await this.Citizen_Model.findByIdAndDelete(id).exec();
-        return !!result;
-    }
+	async remove(id: string): Promise<boolean> {
+		const result = await this.Citizen_Model.findByIdAndDelete(id).exec();
+		return !!result;
+	}
 
-    async findOneByCondition(condition: FilterQuery<Citizen>): Promise<Citizen | null> {
-        try {
+	async findOneByCondition(
+		condition: FilterQuery<Citizen>,
+	): Promise<Citizen | null> {
+		try {
 			const citizen = await this.Citizen_Model.findOne(condition).exec();
 			return citizen;
 		} catch (error) {
 			console.error('Error finding student:', error);
 			throw error;
 		}
-    }
+	}
 
-    async delete(id: string | Types.ObjectId): Promise<Citizen | null> {
-        const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-        return this.Citizen_Model.findByIdAndUpdate(stringId, { deleted_at: new Date(), isActive: false }, { new: true }).exec();
-    }
+	async delete(id: string | Types.ObjectId): Promise<Citizen | null> {
+		const stringId = id instanceof Types.ObjectId ? id.toString() : id;
+		return this.Citizen_Model.findByIdAndUpdate(
+			stringId,
+			{ deleted_at: new Date(), isActive: false },
+			{ new: true },
+		).exec();
+	}
 
-    async countAllCitizens() {
-        const total = await this.Citizen_Model.countDocuments().exec();
+	async countAllCitizens() {
+		const total = await this.Citizen_Model.countDocuments().exec();
 
 		const startOfMonth = moment().startOf('month').toDate();
 		const endOfMonth = moment().endOf('month').toDate();
@@ -123,5 +159,5 @@ export class CitizensRepository implements CitizensRepositoryInterface {
 			total,
 			monthlyRegistered,
 		};
-    }
+	}
 }

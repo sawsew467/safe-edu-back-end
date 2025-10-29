@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { TokenPayload } from '../interfaces/token.interface';
@@ -86,7 +86,7 @@ export class JwtAccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
 				}
 				break;
 			default:
-				throw new UnauthorizedException(
+				throw new ForbiddenException(
 					'Quyền truy cập bị từ chối: Vai trò không hợp lệ.',
 				);
 		}

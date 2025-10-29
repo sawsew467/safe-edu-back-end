@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo an toàn</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+
+                <!-- Main Container -->
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+                                SafeEdu
+                            </h1>
+                            <p style="margin: 10px 0 0 0; color: #fef3c7; font-size: 14px;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Alert Badge -->
+                    <tr>
+                        <td style="background-color: #fffbeb; padding: 20px 40px; border-bottom: 3px solid #f59e0b;">
+                            <table role="presentation" width="100%">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span style="display: inline-block; background-color: #f59e0b; color: #ffffff; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">
+                                            CẤP ĐỘ 2 - CẢNH BÁO
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+
+                            <!-- Alert Message -->
+                            <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0; color: #92400e; font-size: 15px; font-weight: 600; line-height: 1.5;">
+                                    ⚠️ Thông báo sự cố bạo lực học đường
+                                </p>
+                                <p style="margin: 8px 0 0 0; color: #78350f; font-size: 14px; line-height: 1.6;">
+                                    Hệ thống đã ghi nhận một sự cố bạo lực học đường tại <strong>{{organizationName}}</strong>. Chúng tôi muốn thông báo để cộng đồng có thể cảnh giác và hỗ trợ tạo môi trường học tập an toàn hơn.
+                                </p>
+                            </div>
+
+                            <!-- Report Details -->
+                            <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 18px; font-weight: 600;">
+                                Thông tin sự cố
+                            </h2>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Mã báo cáo:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                                                    #{{reportId}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Tổ chức:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{organizationName}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Mức độ tác động:
+                                                </td>
+                                                <td>
+                                                    <span style="display: inline-block; background-color: #fef3c7; color: #92400e; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 500;">
+                                                        {{impactLevel}}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Tình trạng:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                                                    {{currentSituation}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Loại bạo lực:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{violenceTypes}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Thời gian:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{timeOfIncident}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Advice Box -->
+                            <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0 0 12px 0; color: #1e40af; font-size: 14px; font-weight: 600;">
+                                    💡 Lời khuyên cho phụ huynh và học sinh:
+                                </p>
+                                <ul style="margin: 0; padding-left: 20px; color: #1e3a8a; font-size: 14px; line-height: 1.8;">
+                                    <li>Trao đổi với con em về các vấn đề an toàn tại trường</li>
+                                    <li>Khuyến khích báo cáo ngay khi phát hiện các hành vi bạo lực</li>
+                                    <li>Hợp tác với nhà trường trong việc tạo môi trường an toàn</li>
+                                    <li>Liên hệ với giáo viên chủ nhiệm nếu có lo ngại</li>
+                                </ul>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <a href="{{supportUrl}}" style="display: inline-block; background-color: #f59e0b; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.2);">
+                                            Hỗ trợ và tư vấn
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Important Note -->
+                            <p style="margin-top: 30px; padding: 16px; background-color: #fef2f2; border-radius: 4px; color: #991b1b; font-size: 13px; line-height: 1.6; font-style: italic;">
+                                ⚠️ Nếu bạn hoặc ai đó bạn biết đang gặp nguy hiểm, vui lòng liên hệ ngay với nhà trường hoặc cơ quan chức năng.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0 0 10px 0; color: #111827; font-size: 14px; font-weight: 600;">
+                                SafeEdu
+                            </p>
+                            <p style="margin: 0 0 15px 0; color: #6b7280; font-size: 13px; line-height: 1.6;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                            <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.5;">
+                                Email này được gửi tự động. Vui lòng không trả lời email này.<br>
+                                Nếu cần hỗ trợ, vui lòng truy cập hệ thống hoặc liên hệ quản trị viên.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Container -->
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

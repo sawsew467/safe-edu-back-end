@@ -49,7 +49,28 @@ export class Organization extends BaseEntity {
 	manager_id: mongoose.Types.ObjectId[];
 
 	@Prop()
+	email: string;
+
+	@Prop()
 	slug: string;
+
+	@Prop({ required: false })
+	principal_name?: string;
+
+	@Prop({ required: false })
+	principal_phone?: string;
+
+	@Prop({ required: false })
+	principal_email?: string;
+
+	@Prop({ required: false })
+	vice_principal_name?: string;
+
+	@Prop({ required: false })
+	vice_principal_phone?: string;
+
+	@Prop({ required: false })
+	vice_principal_email?: string;
 }
 
 export const OrganizationsSchema = SchemaFactory.createForClass(Organization);

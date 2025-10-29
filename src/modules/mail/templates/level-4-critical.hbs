@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cảnh báo khẩn cấp</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+
+                <!-- Main Container -->
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 30px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+                                SafeEdu
+                            </h1>
+                            <p style="margin: 10px 0 0 0; color: #fee2e2; font-size: 14px;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Alert Badge -->
+                    <tr>
+                        <td style="background-color: #fef2f2; padding: 20px 40px; border-bottom: 3px solid #dc2626;">
+                            <table role="presentation" width="100%">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span style="display: inline-block; background-color: #dc2626; color: #ffffff; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">
+                                            CẤP ĐỘ 4 - KHẨN CẤP
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+
+                            <!-- Alert Message -->
+                            <div style="background-color: #fef2f2; border-left: 4px solid #dc2626; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0; color: #991b1b; font-size: 15px; font-weight: 600; line-height: 1.5;">
+                                    ⚠️ Báo cáo bạo lực học đường nghiêm trọng
+                                </p>
+                                <p style="margin: 8px 0 0 0; color: #7f1d1d; font-size: 14px; line-height: 1.6;">
+                                    Hệ thống vừa ghi nhận một báo cáo cần xử lý khẩn cấp tại <strong>{{organizationName}}</strong>. Vui lòng xem chi tiết và thực hiện các biện pháp xử lý ngay lập tức.
+                                </p>
+                            </div>
+
+                            <!-- Report Details -->
+                            <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 18px; font-weight: 600;">
+                                Thông tin báo cáo
+                            </h2>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Mã báo cáo:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                                                    #{{reportId}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Nạn nhân:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{victimName}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                {{#if classGrade}}
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Lớp:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{classGrade}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                {{/if}}
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Mức độ tác động:
+                                                </td>
+                                                <td>
+                                                    <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 12px; font-size: 13px; font-weight: 500;">
+                                                        {{impactLevel}}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Tình trạng:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                                                    {{currentSituation}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Loại bạo lực:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{violenceTypes}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Thời gian:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{timeOfIncident}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Action Required -->
+                            <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0 0 12px 0; color: #92400e; font-size: 14px; font-weight: 600;">
+                                    Hành động cần thực hiện:
+                                                </p>
+                                <ul style="margin: 0; padding-left: 20px; color: #78350f; font-size: 14px; line-height: 1.8;">
+                                    <li>Xem chi tiết báo cáo và bằng chứng đính kèm</li>
+                                    <li>Liên hệ với các bên liên quan (học sinh, phụ huynh)</li>
+                                    <li>Triển khai biện pháp bảo vệ nạn nhân</li>
+                                    <li>Báo cáo với cơ quan chức năng nếu cần</li>
+                                    <li>Cập nhật trạng thái xử lý trên hệ thống</li>
+                                </ul>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <a href="{{dashboardUrl}}" style="display: inline-block; background-color: #dc2626; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);">
+                                            Xem chi tiết và xử lý
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0 0 10px 0; color: #111827; font-size: 14px; font-weight: 600;">
+                                SafeEdu
+                            </p>
+                            <p style="margin: 0 0 15px 0; color: #6b7280; font-size: 13px; line-height: 1.6;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                            <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.5;">
+                                Email này được gửi tự động. Vui lòng không trả lời email này.<br>
+                                Nếu cần hỗ trợ, vui lòng truy cập hệ thống hoặc liên hệ quản trị viên.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Container -->
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

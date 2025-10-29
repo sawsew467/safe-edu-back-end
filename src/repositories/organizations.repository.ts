@@ -6,13 +6,20 @@ import { Organization } from '@modules/organizations/entities/organization.entit
 import { Province } from '@modules/provinces/entities/province.entity';
 
 @Injectable()
-export class OrganizationsRepository implements OrganizationsRepositoryInterface {
+export class OrganizationsRepository
+	implements OrganizationsRepositoryInterface
+{
 	constructor(
-		@InjectModel(Organization.name) private readonly organizationModel: Model<Organization>,
+		@InjectModel(Organization.name)
+		private readonly organizationModel: Model<Organization>,
 		@InjectModel(Province.name) private readonly provinceModel: Model<Province>,
-	) { }
-	async findOne(condition: FilterQuery<Organization>): Promise<Organization | null> {
-		return await this.organizationModel.findOne(condition)
+	) {}
+
+	async findOne(
+		condition: FilterQuery<Organization>,
+	): Promise<Organization | null> {
+		return await this.organizationModel
+			.findOne(condition)
 			.populate('province_id')
 			.exec();
 	}
@@ -25,9 +32,19 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 				statusCode: HttpStatus.BAD_REQUEST,
 				message: 'Error creating organization',
 				details: error.message,
-			})
+			});
 		}
 	}
+
+	async findWithCondition(
+		condition: FilterQuery<Organization>,
+	): Promise<Organization[] | null> {
+		return await this.organizationModel
+			.find(condition)
+			.populate('province_id')
+			.exec();
+	}
+
 	async findAll() {
 		const organizations = await this.organizationModel
 			.find()
@@ -38,8 +55,12 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		return { items: organizations, total };
 	}
 
-	async update(id: string, data: Partial<Organization>): Promise<Organization | null> {
-		return await this.organizationModel.findByIdAndUpdate(id, data, { new: true })
+	async update(
+		id: string,
+		data: Partial<Organization>,
+	): Promise<Organization | null> {
+		return await this.organizationModel
+			.findByIdAndUpdate(id, data, { new: true })
 			.populate('province_id')
 			.populate('manager_id')
 			.exec();
@@ -47,16 +68,21 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 
 	async remove(id: string | Types.ObjectId): Promise<Organization | null> {
 		const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-		return this.organizationModel.findByIdAndUpdate(stringId, {
-			deleted_at: new Date(),
-			isActive: false
-		},
-			{ new: true }
-		).exec();
+		return this.organizationModel
+			.findByIdAndUpdate(
+				stringId,
+				{
+					deleted_at: new Date(),
+					isActive: false,
+				},
+				{ new: true },
+			)
+			.exec();
 	}
 
 	async findById(id: string): Promise<Organization | null> {
-		return await this.organizationModel.findById(id)
+		return await this.organizationModel
+			.findById(id)
 			.populate('province_id')
 			.populate('manager_id')
 			.exec(); // Using Mongoose's findById method
@@ -70,8 +96,12 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 		}
 	}
 
-	async findAllWithPaging(query: Record<string, any>, current: number = 1, pageSize: number = 10) {
-		const { sort, ...filters } = query
+	async findAllWithPaging(
+		query: Record<string, any>,
+		current: number = 1,
+		pageSize: number = 10,
+	) {
+		const { sort, ...filters } = query;
 
 		current = Number(current) || 1;
 		pageSize = Number(pageSize) || 10;
@@ -86,7 +116,7 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 			.skip(offset)
 			.sort(sort as any);
 
-		return { items: result, totalPages }
+		return { items: result, totalPages };
 	}
 
 	async isNullOrEmpty(value: string | null | undefined): Promise<boolean> {
@@ -106,11 +136,14 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 
 	async setIsActive(id: string | Types.ObjectId): Promise<Organization | null> {
 		const stringId = id instanceof Types.ObjectId ? id.toString() : id;
-		return this.organizationModel.findByIdAndUpdate(stringId, { isActive: true }, { new: true })
+		return this.organizationModel.findByIdAndUpdate(
+			stringId,
+			{ isActive: true },
+			{ new: true },
+		);
 	}
 
 	async countAll(): Promise<number> {
-
 		const total = await this.organizationModel
 			.countDocuments({ isActive: true, deleted_at: null, deleted_by: null })
 			.exec();
@@ -139,6 +172,4 @@ export class OrganizationsRepository implements OrganizationsRepositoryInterface
 			},
 		]);
 	}
-
-
 }
