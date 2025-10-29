@@ -234,9 +234,7 @@ export class SchoolViolenceReportsService {
 			current_situation,
 			information_sources,
 			information_reliability,
-			contact_option,
-			contact_info,
-			external_contact_info,
+			contact_infor,
 			organizationId,
 			evidence,
 			additional_details,
@@ -269,9 +267,7 @@ export class SchoolViolenceReportsService {
 			currentSituation: current_situation,
 			informationSources: information_sources || [],
 			informationReliability: information_reliability,
-			contactOption: contact_option,
-			contactInfo: contact_info,
-			externalContactInfo: external_contact_info,
+			contactInfo: contact_infor,
 			organizationId: new mongoose.Types.ObjectId(organizationId),
 			alertLevel,
 			hasEvidence,
@@ -340,25 +336,6 @@ export class SchoolViolenceReportsService {
 		return timelineMap;
 	}
 
-	private async getContactInfo(report: Report) {
-		let contactInfo = {};
-
-		if (report.contactInfo === 'internal_email' && report.created_by) {
-			const [student, citizen] = await Promise.all([
-				this.studentsRepository.findOneByCondition({
-					_id: new mongoose.Types.ObjectId(report.created_by.toString()),
-				}),
-				this.citizenRepository.findOneByCondition({
-					_id: new mongoose.Types.ObjectId(report.created_by.toString()),
-				}),
-			]);
-
-			contactInfo =
-				student?.email || citizen?.email || report.externalContactInfo;
-		} else if (report.contactInfo === 'external_email') {
-			contactInfo = report.externalContactInfo;
-		}
-	}
 
 	/**
 	 * Get report by ID with role-based access control
@@ -378,13 +355,11 @@ export class SchoolViolenceReportsService {
 		// Admin can view all reports
 		if (userRole === RolesEnum.ADMIN) {
 			const timeline = await this.getStatusTimeline(id);
-			const contactInfo = await this.getContactInfo(report);
 			return {
 				ok: true,
 				data: {
 					...(report as any).toObject(),
 					statusTimeline: timeline,
-					contactInfo,
 				},
 			};
 		}
@@ -397,14 +372,12 @@ export class SchoolViolenceReportsService {
 			throw new ForbiddenException('Bạn không có quyền xem báo cáo này');
 		}
 
-		const contactInfo = await this.getContactInfo(report);
 
 		const timeline = await this.getStatusTimeline(id);
 		return {
 			ok: true,
 			data: {
 				...(report as any).toObject(),
-				contactInfo,
 				statusTimeline: timeline,
 			},
 		};
@@ -840,7 +813,7 @@ export class SchoolViolenceReportsService {
 		if (organizationId) {
 			// For organization users, get both org-specific and global contacts
 			contacts =
-				await this.emergencyContactRepository.findByOrganizationOrGlobal(
+				await this.emergencyContactRepository.findByOrganization(
 					organizationId,
 				);
 		} else {

@@ -90,20 +90,10 @@ export class CreateReportDto {
 	@IsString()
 	information_reliability?: string;
 
-	@ApiPropertyOptional({ description: 'Tùy chọn liên hệ' })
-	@IsOptional()
-	@IsBoolean()
-	contact_option?: boolean;
-
-	@ApiPropertyOptional({ description: 'Thông tin liên hệ' })
+	@ApiPropertyOptional({ description: 'Thông tin liên hệ (số điện thoại hoặc email của người viết đơn)' })
 	@IsOptional()
 	@IsString()
-	contact_info?: string;
-
-	@ApiPropertyOptional({ description: 'Thông tin liên hệ bên ngoài' })
-	@IsOptional()
-	@IsString()
-	external_contact_info?: string;
+	contact_infor?: string;
 
 	@ApiPropertyOptional({ description: 'Bằng chứng (file)' })
 	@IsOptional()
