@@ -56,14 +56,8 @@ export class Report extends BaseEntity {
   @Prop({ required: false })
   informationReliability?: string;
 
-  @Prop({ required: false, default: false })
-  contactOption: boolean;
-
   @Prop({ required: false })
   contactInfo?: string;
-
-  @Prop({ required: false })
-  externalContactInfo?: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true })
   organizationId: mongoose.Types.ObjectId;

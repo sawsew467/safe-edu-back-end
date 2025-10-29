@@ -21,13 +21,14 @@ export class CreateEmergencyContactDto {
 	@IsEmail()
 	email: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'Vai trò của liên hệ khẩn cấp',
 		enum: EmergencyContactRoleEnum,
 		example: EmergencyContactRoleEnum.PRINCIPAL,
 	})
+	@IsOptional()
 	@IsEnum(EmergencyContactRoleEnum)
-	role: EmergencyContactRoleEnum;
+	role?: EmergencyContactRoleEnum;
 
 	@ApiPropertyOptional({ description: 'ID tổ chức (null = global)' })
 	@IsOptional()
