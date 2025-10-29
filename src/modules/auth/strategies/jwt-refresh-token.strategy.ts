@@ -1,5 +1,9 @@
 import { Request } from 'express';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+	ForbiddenException,
+	Injectable,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
@@ -9,6 +13,7 @@ import { refresh_token_public_key } from 'src/constraints/jwt.constraint';
 import { AdminService } from '@modules/admin/admin.service';
 import { StudentsService } from '@modules/students/students.service';
 import { CitizensService } from '@modules/citizens/citizens.service';
+import { ManagerService } from '@modules/manager/manager.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy(
@@ -19,6 +24,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 		private readonly adminService: AdminService,
 		private readonly studentService: StudentsService,
 		private readonly citizenService: CitizensService,
+		private readonly managerService: ManagerService,
 	) {
 		super({
 			jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -56,8 +62,16 @@ export class JwtRefreshTokenStrategy extends PassportStrategy(
 					);
 				}
 				break;
+			case 'Manager':
+				const manager = await this.managerService.findOneById(userId);
+				if (!manager) {
+					throw new UnauthorizedException(
+						'Quyền truy cập bị từ chối: Không tìm thấy quản lý.',
+					);
+				}
+				break;
 			default:
-				throw new UnauthorizedException(
+				throw new ForbiddenException(
 					'Quyền truy cập bị từ chối: Vai trò không hợp lệ.',
 				);
 		}

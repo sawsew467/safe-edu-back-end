@@ -54,7 +54,7 @@ export class AuthService {
 		private readonly resetTokenService: ResetTokenService,
 		private readonly provinceVisitService: ProvinceVisitService,
 		private readonly organizationService: OrganizationsService,
-	) { }
+	) {}
 	generateAccessToken(payload: TokenPayload) {
 		return this.jwt_service.sign(payload, {
 			algorithm: 'RS256',
@@ -92,12 +92,17 @@ export class AuthService {
 			const results = await Promise.allSettled([
 				this.admin_service.getAdminByEmail(email),
 				this.supervisor_service.findOneByCondition({ email }),
-				this.manager_service.findOneByCondition({ email }, { populate: 'organizationId' }),
+				this.manager_service.findOneByCondition(
+					{ email },
+					{ populate: 'organizationId' },
+				),
 			]);
 
 			const admin = results[0].status === 'fulfilled' ? results[0].value : null;
-			const supervisor = results[1].status === 'fulfilled' ? results[1].value : null;
-			const manager = results[2].status === 'fulfilled' ? results[2].value : null;
+			const supervisor =
+				results[1].status === 'fulfilled' ? results[1].value : null;
+			const manager: any =
+				results[2].status === 'fulfilled' ? results[2].value : null;
 
 			let user = null;
 			let role = '';
@@ -118,11 +123,13 @@ export class AuthService {
 				if (avatar && admin.avatar_url !== avatar) {
 					await this.admin_service.update(admin.id, { avatar_url: avatar });
 				}
-
 			} else if (supervisor) {
 				if (!supervisor.isActive) {
 					throw new HttpException(
-						{ message: 'Tài khoản supervisor đã bị khóa', error: 'Unauthorized' },
+						{
+							message: 'Tài khoản supervisor đã bị khóa',
+							error: 'Unauthorized',
+						},
 						HttpStatus.UNAUTHORIZED,
 					);
 				}
@@ -131,9 +138,10 @@ export class AuthService {
 				fullName = `${supervisor.first_name} ${supervisor.last_name}`;
 
 				if (avatar && supervisor.avatar !== avatar) {
-					await this.supervisor_service.update(supervisor.id, { avatar_url: avatar });
+					await this.supervisor_service.update(supervisor.id, {
+						avatar_url: avatar,
+					});
 				}
-
 			} else if (manager) {
 				if (!manager.isActive) {
 					throw new HttpException(
@@ -143,27 +151,33 @@ export class AuthService {
 				}
 				user = manager;
 				role = 'Manager';
-				organizationId = manager.organizationId?.toString();
+				organizationId = manager.organizationId?.at(0)?._id.toString();
 				fullName = `${manager.first_name} ${manager.last_name}`;
 
 				if (avatar && manager.avatar !== avatar) {
 					await this.manager_service.updateImage(manager.id, avatar);
 				}
-
 			} else {
 				throw new HttpException(
-					{ message: 'Không tìm thấy người dùng phù hợp', error: 'Unauthorized' },
+					{
+						message: 'Không tìm thấy người dùng phù hợp',
+						error: 'Unauthorized',
+					},
 					HttpStatus.UNAUTHORIZED,
 				);
 			}
 
 			const accessToken = this.generateAccessToken({
 				userId: user.id,
+				...(role === 'Manager' && {
+					organizationId,
+				}),
 				role,
 			});
 
 			const refreshToken = this.generateRefreshToken({
 				userId: user.id,
+				...(role === 'Manager' && { organizationId }),
 				role,
 			});
 
@@ -186,7 +200,6 @@ export class AuthService {
 			});
 		}
 	}
-
 
 	// async getUserIfRefreshTokenMatched(
 	// 	user_id: string,
@@ -232,11 +245,17 @@ export class AuthService {
 
 	async signIn(sign_in_dto: SignInDto) {
 		const { username, password } = sign_in_dto;
-		const normalizedUsername = username.toLowerCase()
+		const normalizedUsername = username.toLowerCase();
 		const [existed_student_username, existed_citizen_username] =
 			await Promise.all([
-				await this.student_service.findOneByCondition({ username: { $regex: `^${normalizedUsername}$`, $options: 'i' } }, 'sign-in'),
-				await this.citizen_service.findOneByCondition({ username: { $regex: `^${normalizedUsername}$`, $options: 'i' } }, 'sign-in'),
+				await this.student_service.findOneByCondition(
+					{ username: { $regex: `^${normalizedUsername}$`, $options: 'i' } },
+					'sign-in',
+				),
+				await this.citizen_service.findOneByCondition(
+					{ username: { $regex: `^${normalizedUsername}$`, $options: 'i' } },
+					'sign-in',
+				),
 			]);
 
 		if (existed_student_username) {
@@ -267,12 +286,12 @@ export class AuthService {
 			);
 
 			if (existed_student_username.organizationId) {
-
 				const studentOrganization = await this.organizationService.findOneById(
-					existed_student_username.organizationId._id.toString()
-
+					existed_student_username.organizationId._id.toString(),
 				);
-				await this.provinceVisitService.increaseVisit(studentOrganization.province_id._id.toString());
+				await this.provinceVisitService.increaseVisit(
+					studentOrganization.province_id._id.toString(),
+				);
 			}
 			return {
 				access_token: this.generateAccessToken({
@@ -311,8 +330,7 @@ export class AuthService {
 			if (
 				Array.isArray(existed_citizen_username.province) &&
 				existed_citizen_username.province.length > 0
-			) 
-			{
+			) {
 				await this.provinceVisitService.increaseVisit(
 					existed_citizen_username.province[0].toString(),
 				);
@@ -343,7 +361,7 @@ export class AuthService {
 				date_of_birth,
 				password,
 			} = sign_up_with_std_dto;
-			const normalizedUsername = username.toLowerCase()
+			const normalizedUsername = username.toLowerCase();
 			const student = await this.student_service.create({
 				first_name,
 				last_name,
@@ -387,8 +405,15 @@ export class AuthService {
 
 	async signUpWithCitizen(sign_up_with_citizen_dto: SignUpWithCitizenDto) {
 		try {
-			const { first_name, last_name, phone_number, province, email, username, password } =
-				sign_up_with_citizen_dto;
+			const {
+				first_name,
+				last_name,
+				phone_number,
+				province,
+				email,
+				username,
+				password,
+			} = sign_up_with_citizen_dto;
 
 			const citizen = await this.citizen_service.create({
 				first_name,
@@ -515,9 +540,17 @@ export class AuthService {
 		access_token: string;
 		refresh_token: string;
 	}> {
-		const { userId, role } = user;
-		const access_token = this.generateAccessToken({ userId, role });
-		const refresh_token = this.generateRefreshToken({ userId, role });
+		const { userId, role, organizationId } = user;
+		const access_token = this.generateAccessToken({
+			userId,
+			role,
+			...(role === 'Manager' && { organizationId }),
+		});
+		const refresh_token = this.generateRefreshToken({
+			userId,
+			role,
+			...(role === 'Manager' && { organizationId }),
+		});
 		return {
 			access_token,
 			refresh_token,
@@ -525,7 +558,6 @@ export class AuthService {
 	}
 
 	async authInWithGoogle(sign_up_dto: SignUpGoogleDto) {
-
 		try {
 			const results = await Promise.allSettled([
 				this.admin_service.findOneByCondition({ email: sign_up_dto.email }),
@@ -534,7 +566,7 @@ export class AuthService {
 				}),
 				this.manager_service.findOneByCondition(
 					{ email: sign_up_dto.email },
-					{ populate: 'organizationId' }
+					{ populate: 'organizationId' },
 				),
 			]);
 
@@ -581,7 +613,7 @@ export class AuthService {
 	async signInManager(_id: string) {
 		const manager = await this.manager_service.findOneByCondition(
 			{ _id },
-			{ populate: 'organizationId' } // <--- thêm dòng này nếu hỗ trợ
+			{ populate: 'organizationId' }, // <--- thêm dòng này nếu hỗ trợ
 		);
 
 		if (manager) {
@@ -601,7 +633,6 @@ export class AuthService {
 			};
 		}
 	}
-
 
 	async signInSupervisor(_id: string) {
 		const supervisor = await this.supervisor_service.findOneByCondition({
@@ -627,15 +658,18 @@ export class AuthService {
 	async forgotPassword(email: string) {
 		try {
 			const results = await Promise.allSettled([
-				this.citizen_service.findOneByCondition({
-					email: email
-				},
-					'forgot-password'
+				this.citizen_service.findOneByCondition(
+					{
+						email: email,
+					},
+					'forgot-password',
 				),
-				this.student_service.findOneByCondition({
-					email: email
-				},
-					'forgot-password'),
+				this.student_service.findOneByCondition(
+					{
+						email: email,
+					},
+					'forgot-password',
+				),
 			]);
 			if (!results) {
 				throw new BadRequestException({
@@ -681,7 +715,8 @@ export class AuthService {
 			throw new HttpException(
 				{
 					statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-					message: 'Có lỗi xảy ra quên mật khẩu vui lòng thử lại sau, ${error.message}',
+					message:
+						'Có lỗi xảy ra quên mật khẩu vui lòng thử lại sau, ${error.message}',
 				},
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
@@ -714,7 +749,6 @@ export class AuthService {
 				},
 				HttpStatus.INTERNAL_SERVER_ERROR,
 			);
-
 		}
 	}
 
@@ -729,18 +763,23 @@ export class AuthService {
 			}
 			const hashedPassword = await bcrypt.hash(newPassword, 10);
 			const results = await Promise.allSettled([
-				this.citizen_service.findOneByCondition({
-					email: validOtp.email
-				},
-					'forgot-password'
+				this.citizen_service.findOneByCondition(
+					{
+						email: validOtp.email,
+					},
+					'forgot-password',
 				),
-				this.student_service.findOneByCondition({
-					email: validOtp.email
-				},
-					'forgot-password'),
+				this.student_service.findOneByCondition(
+					{
+						email: validOtp.email,
+					},
+					'forgot-password',
+				),
 			]);
-			const citizen = results[0].status === 'fulfilled' ? results[0].value : null;
-			const student = results[1].status === 'fulfilled' ? results[1].value : null;
+			const citizen =
+				results[0].status === 'fulfilled' ? results[0].value : null;
+			const student =
+				results[1].status === 'fulfilled' ? results[1].value : null;
 			if (citizen) {
 				await this.citizen_service.update(citizen._id.toString(), {
 					password: hashedPassword,

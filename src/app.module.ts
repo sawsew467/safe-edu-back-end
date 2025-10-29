@@ -7,10 +7,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { database_config } from './configs/configuration.config';
 
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { GlobalExceptionFilter } from './exception-filters/global-exception.filter';
 import * as mongoose from 'mongoose';
 import { TopicsModule } from '@modules/topic/topic.module';
+import { SharedModule } from '@modules/shared/shared.module';
+import { RequestContextService } from '@modules/shared/context/request-context.service';
+import { initializeAuditPlugin } from './plugins/audit-fields.plugin';
+import { RequestContextInterceptor } from './interceptors/request-context.interceptor';
 
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
 import { NewsModule } from '@modules/news/news.module';
@@ -38,10 +42,13 @@ import { ResetTokenModule } from './modules/reset-token/reset-token.module';
 import { VisitModule } from './modules/visit/visit.module';
 import { ProvinceVisitModule } from './modules/province-vist/province-vist.module';
 import { ProvincesModule } from '@modules/provinces/provinces.module';
+import { SchoolViolenceReportsModule } from '@modules/school-violence-reports/school-violence-reports.module';
+import { MailModule } from '@modules/mail/mail.module';
 
 
 @Module({
 	imports: [
+		SharedModule,
 		ConfigModule.forRoot({
 			validationSchema: Joi.object({
 				NODE_ENV: Joi.string()
@@ -64,18 +71,24 @@ import { ProvincesModule } from '@modules/provinces/provinces.module';
 			envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env',
 		}),
 		MongooseModule.forRootAsync({
-			imports: [ConfigModule],
-			useFactory: async (configService: ConfigService) => {
+			imports: [ConfigModule, SharedModule],
+			useFactory: async (
+				configService: ConfigService,
+				contextService: RequestContextService,
+			) => {
 				const uri = configService.get<string>('DATABASE_URI');
 				const dbName = configService.get<string>('DATABASE_NAME');
-				// Log MongoDB queries
+
+				initializeAuditPlugin(contextService);
+
 				mongoose.set('debug', true);
+
 				return {
 					uri,
 					dbName,
 				};
 			},
-			inject: [ConfigService],
+			inject: [ConfigService, RequestContextService],
 		}),
 		OrganizationsModule,
 		NewsModule,
@@ -106,6 +119,8 @@ import { ProvincesModule } from '@modules/provinces/provinces.module';
 		DocumentModule,
 		VisitModule,
 		ProvinceVisitModule,
+		SchoolViolenceReportsModule,
+		MailModule,
 	],
 	controllers: [AppController],
 	providers: [
@@ -113,6 +128,10 @@ import { ProvincesModule } from '@modules/provinces/provinces.module';
 		{
 			provide: APP_FILTER,
 			useClass: GlobalExceptionFilter,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: RequestContextInterceptor,
 		},
 	],
 })

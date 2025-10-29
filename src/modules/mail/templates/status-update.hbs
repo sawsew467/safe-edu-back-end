@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật trạng thái báo cáo</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5;">
+        <tr>
+            <td align="center" style="padding: 20px 0;">
+
+                <!-- Main Container -->
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); padding: 30px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
+                                SafeEdu
+                            </h1>
+                            <p style="margin: 10px 0 0 0; color: #cffafe; font-size: 14px;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Status Badge -->
+                    <tr>
+                        <td style="background-color: #ecfeff; padding: 20px 40px; border-bottom: 3px solid #0891b2;">
+                            <table role="presentation" width="100%">
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <span style="display: inline-block; background-color: #0891b2; color: #ffffff; padding: 8px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; letter-spacing: 0.5px;">
+                                            CẬP NHẬT TRẠNG THÁI
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Main Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+
+                            <!-- Update Message -->
+                            <div style="background-color: #ecfeff; border-left: 4px solid #0891b2; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0; color: #155e75; font-size: 15px; font-weight: 600; line-height: 1.5;">
+                                    ✓ Trạng thái báo cáo đã được cập nhật
+                                </p>
+                                <p style="margin: 8px 0 0 0; color: #164e63; font-size: 14px; line-height: 1.6;">
+                                    Báo cáo <strong>#{{reportId}}</strong> tại <strong>{{organizationName}}</strong> đã có cập nhật trạng thái mới.
+                                </p>
+                            </div>
+
+                            <!-- Status Change Visualization -->
+                            <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 18px; font-weight: 600;">
+                                Thay đổi trạng thái
+                            </h2>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td width="45%" align="center" style="padding: 20px; background-color: #f3f4f6; border-radius: 8px;">
+                                        <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Trạng thái cũ
+                                        </p>
+                                        <p style="margin: 0; color: #4b5563; font-size: 16px; font-weight: 600;">
+                                            {{oldStatus}}
+                                        </p>
+                                    </td>
+                                    <td width="10%" align="center" style="padding: 0 10px;">
+                                        <span style="color: #0891b2; font-size: 24px; font-weight: bold;">→</span>
+                                    </td>
+                                    <td width="45%" align="center" style="padding: 20px; background-color: #ecfeff; border: 2px solid #0891b2; border-radius: 8px;">
+                                        <p style="margin: 0 0 8px 0; color: #0891b2; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+                                            Trạng thái mới
+                                        </p>
+                                        <p style="margin: 0; color: #0e7490; font-size: 16px; font-weight: 600;">
+                                            {{newStatus}}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Report Details -->
+                            <h2 style="margin: 0 0 20px 0; color: #111827; font-size: 18px; font-weight: 600;">
+                                Thông tin báo cáo
+                            </h2>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Mã báo cáo:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px; font-weight: 500;">
+                                                    #{{reportId}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table role="presentation" width="100%">
+                                            <tr>
+                                                <td width="160" style="color: #6b7280; font-size: 14px; vertical-align: top;">
+                                                    Tổ chức:
+                                                </td>
+                                                <td style="color: #111827; font-size: 14px;">
+                                                    {{organizationName}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Info Note -->
+                            <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 16px 20px; margin-bottom: 30px; border-radius: 4px;">
+                                <p style="margin: 0; color: #1e40af; font-size: 13px; line-height: 1.6;">
+                                    💡 <strong>Lưu ý:</strong> Bạn nhận được email này vì bạn đang theo dõi báo cáo hoặc là người liên quan. Để xem chi tiết đầy đủ về báo cáo và các cập nhật khác, vui lòng truy cập hệ thống.
+                                </p>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td align="center" style="padding: 10px 0;">
+                                        <a href="{{dashboardUrl}}" style="display: inline-block; background-color: #0891b2; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-size: 15px; font-weight: 600; box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);">
+                                            Xem chi tiết báo cáo
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 30px 40px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0 0 10px 0; color: #111827; font-size: 14px; font-weight: 600;">
+                                SafeEdu
+                            </p>
+                            <p style="margin: 0 0 15px 0; color: #6b7280; font-size: 13px; line-height: 1.6;">
+                                Hệ thống quản lý an toàn giáo dục
+                            </p>
+                            <p style="margin: 0; color: #9ca3af; font-size: 12px; line-height: 1.5;">
+                                Email này được gửi tự động. Vui lòng không trả lời email này.<br>
+                                Nếu cần hỗ trợ, vui lòng truy cập hệ thống hoặc liên hệ quản trị viên.
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Container -->
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -6,10 +6,17 @@ export interface OrganizationsRepositoryInterface {
 	findAll();
 	update(id: string, data: Partial<Organization>): Promise<Organization | null>;
 	remove(id: string | Types.ObjectId): Promise<Organization | null>;
-	findOne(condition: FilterQuery<Organization>): Promise<Organization | null>;  
-	findById(id : string)
-	findAllWithPaging(query: Record<string, any>, current: number, pageSize: number);
-	setIsActive(id: string): Promise<Organization | null>
+	findOne(condition: FilterQuery<Organization>): Promise<Organization | null>;
+	findById(id: string);
+	findWithCondition(
+		condition: FilterQuery<Organization>,
+	): Promise<Organization[] | null>;
+	findAllWithPaging(
+		query: Record<string, any>,
+		current: number,
+		pageSize: number,
+	);
+	setIsActive(id: string): Promise<Organization | null>;
 	countAll(): Promise<number>;
-	countOrganizationsByProvince():Promise<any[]>
+	countOrganizationsByProvince(): Promise<any[]>;
 }

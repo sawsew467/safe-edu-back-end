@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo báo cáo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px 10px 0 0;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .info-badge {
+            background: white;
+            color: #3B82F6;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        .content {
+            background: #fff;
+            padding: 30px;
+            border: 2px solid #3B82F6;
+            border-top: none;
+        }
+        .info-box {
+            background: #EFF6FF;
+            border-left: 5px solid #3B82F6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .info-row {
+            margin: 15px 0;
+            padding: 10px;
+            background: #F9FAFB;
+            border-radius: 5px;
+        }
+        .label {
+            font-weight: bold;
+            color: #4B5563;
+            display: inline-block;
+            width: 180px;
+        }
+        .value {
+            color: #1F2937;
+        }
+        .action-button {
+            display: inline-block;
+            background: #3B82F6;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .action-button:hover {
+            background: #2563EB;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #6B7280;
+            font-size: 14px;
+            background: #F9FAFB;
+            border-radius: 0 0 10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ℹ️ THÔNG BÁO BÁO CÁO</h1>
+        <div class="info-badge">CẤP ĐỘ 1 - THÔNG TIN</div>
+    </div>
+
+    <div class="content">
+        <div class="info-box">
+            <p style="color: #3B82F6; font-weight: bold; font-size: 16px;">📝 BÁO CÁO MỚI ĐÃ ĐƯỢC GHI NHẬN</p>
+            <p>Hệ thống đã ghi nhận một báo cáo về sự cố tại <strong>{{organizationName}}</strong>. Tình huống đã được giải quyết hoặc đang trong quá trình theo dõi.</p>
+        </div>
+
+        <h3>📋 Thông tin báo cáo:</h3>
+
+        <div class="info-row">
+            <span class="label">Mã báo cáo:</span>
+            <span class="value">#{{reportId}}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">Nạn nhân:</span>
+            <span class="value">{{victimName}}</span>
+        </div>
+
+        {{#if classGrade}}
+        <div class="info-row">
+            <span class="label">Lớp:</span>
+            <span class="value">{{classGrade}}</span>
+        </div>
+        {{/if}}
+
+        <div class="info-row">
+            <span class="label">Mức độ tác động:</span>
+            <span class="value">{{impactLevel}}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">Tình trạng hiện tại:</span>
+            <span class="value">{{currentSituation}}</span>
+        </div>
+
+        <div class="info-row">
+            <span class="label">Thời gian xảy ra:</span>
+            <span class="value">{{timeOfIncident}}</span>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="{{dashboardUrl}}" class="action-button">
+                XEM CHI TIẾT
+            </a>
+        </div>
+
+        <p style="margin-top: 30px; color: #6B7280;">
+            Báo cáo này được ghi nhận để theo dõi và đảm bảo môi trường học tập an toàn. Không cần hành động khẩn cấp.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p><strong>SafeEdu - Hệ thống quản lý an toàn giáo dục</strong></p>
+        <p>Email này được gửi tự động. Vui lòng không trả lời email này.</p>
+    </div>
+</body>
+</html>
