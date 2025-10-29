@@ -43,6 +43,8 @@ export class SchoolViolenceReportsService {
 		private readonly citizenRepository: CitizensRepositoryInterface,
 		@Inject('OrganizationsRepositoryInterface')
 		private readonly organizationRepository: OrganizationsRepositoryInterface,
+		@Inject('AdminRepositoryInterface')
+		private readonly adminRepository: AdminRepositoryInterface,
 		private readonly mailService: MailService,
 	) {}
 
@@ -79,75 +81,59 @@ export class SchoolViolenceReportsService {
 		alertLevel: number,
 		organizationId: string,
 	): Promise<string[]> {
-		const organization =
-			await this.organizationRepository.findById(organizationId);
-		if (!organization) {
-			console.warn(`Organization not found: ${organizationId}`);
+		const emergencyContacts =
+			await this.emergencyContactRepository.findByOrganizationOrGlobal(
+				organizationId,
+			);
+
+		if (!emergencyContacts || emergencyContacts.length === 0) {
+			console.warn(
+				`No emergency contacts found for organization: ${organizationId}`,
+			);
 			return [];
 		}
 
-		// Collect principal and vice principal emails
-		const principalEmails: string[] = [];
-		if (organization.principal_email) {
-			principalEmails.push(organization.principal_email);
-		}
-		if (organization.vice_principal_email) {
-			principalEmails.push(organization.vice_principal_email);
-		}
+		const emailSet = new Set<string>();
 
 		switch (alertLevel) {
-			case 4:
-				const organizationAdmins =
-					await this.organizationRepository.findWithCondition({
-						_id: organizationId,
-					});
-				const emergencyContactOrgAndGlobal =
-					await this.emergencyContactRepository.findByOrganizationOrGlobal(
-						organizationId,
-					);
-				return [
-					...organizationAdmins
-						?.filter((admin) => admin?.email)
-						.map((admin) => admin.email),
-					...emergencyContactOrgAndGlobal
-						?.filter((contact) => contact.email)
-						.map((contact) => contact.email),
-					...principalEmails,
-				];
-			case 3:
-				const emergencyContacts =
-					await this.emergencyContactRepository.findByOrganization(
-						organizationId,
-					);
-				return [
-					...emergencyContacts
-						.filter((contact) => contact.email)
-						.map((contact) => contact.email),
-					...principalEmails,
-				];
-
-			case 2:
-				const students =
-					await this.studentsRepository.findByOrgId(organizationId);
-
-				const citizens =
-					await this.citizenRepository.findByOrgId(organizationId);
-				return [
-					...students
-						.filter((student) => student.email)
-						.map((student) => student.email),
-					...citizens
-						.filter((student) => student.email)
-						.map((citizen) => citizen.email),
-				];
-
 			case 1:
 				return [];
+
+			case 2:
+				emergencyContacts
+					.filter(
+						(contact) =>
+							contact.role === 'student-affairs-officer' && contact.email,
+					)
+					.forEach((contact) => emailSet.add(contact.email));
+				break;
+
+			case 3:
+				emergencyContacts
+					.filter(
+						(contact) =>
+							[
+								'vice-principal',
+								'board-of-directors',
+								'principal',
+								'student-affairs-officer',
+							].includes(contact.role) && contact.email,
+					)
+					.forEach((contact) => emailSet.add(contact.email));
+				break;
+
+			case 4:
+				emergencyContacts
+					.filter((contact) => contact.email)
+					.forEach((contact) => emailSet.add(contact.email));
+				break;
 
 			default:
 				console.error(`Invalid alert level: ${alertLevel}`);
 				return [];
 		}
+
+		return Array.from(emailSet);
 	}
 
 	private async sendAlertEmail(
@@ -253,6 +239,7 @@ export class SchoolViolenceReportsService {
 			external_contact_info,
 			organizationId,
 			evidence,
+			additional_details,
 		} = createReportDto;
 
 		let hasEvidence = false;
@@ -290,6 +277,7 @@ export class SchoolViolenceReportsService {
 			hasEvidence,
 			evidenceUrl: evidence,
 			status: 'Pending',
+			additional_details,
 		});
 
 		// Save initial status to history
@@ -710,6 +698,47 @@ export class SchoolViolenceReportsService {
 	}
 
 	/**
+	 * Update additional details for a report
+	 */
+	async updateAdditionalDetails(
+		id: string,
+		updateAdditionalDetailsDto: any,
+		userId?: string,
+		userOrgId?: string,
+	) {
+		const report = await this.reportRepository.findById(id);
+
+		if (!report) {
+			throw new NotFoundException('Báo cáo không tồn tại');
+		}
+
+		if (userId.toString() !== report.created_by.toString()) {
+			throw new ForbiddenException('Bạn không có quyền cập nhật báo cáo này');
+		}
+
+		const updatedReport = await this.reportRepository.update(id, {
+			additional_details: updateAdditionalDetailsDto.additional_details,
+		});
+
+		await this.statusHistoryRepository.create({
+			reportId: new mongoose.Types.ObjectId(id),
+			oldStatus: 'Update Details',
+			newStatus: 'Update Details',
+			changedBy: userId ? new mongoose.Types.ObjectId(userId) : undefined,
+			note: updateAdditionalDetailsDto.note || 'Cập nhật thông tin chi tiết',
+			changedAt: new Date(),
+		});
+
+		return {
+			ok: true,
+			updated: {
+				id: updatedReport._id.toString(),
+				additional_details: updatedReport.additional_details,
+			},
+		};
+	}
+
+	/**
 	 * Send status update email notification
 	 */
 	private async sendStatusUpdateEmail(
@@ -793,6 +822,7 @@ export class SchoolViolenceReportsService {
 			name: createDto.name,
 			phoneNumber: createDto.phoneNumber,
 			email: createDto.email,
+			role: createDto.role,
 			organizationId: createDto.organizationId
 				? new mongoose.Types.ObjectId(createDto.organizationId)
 				: null,

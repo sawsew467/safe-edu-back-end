@@ -79,6 +79,9 @@ export class Report extends BaseEntity {
 
   @Prop({ required: false, default: 'Pending' })
   status: string;
+
+  @Prop({ required: false })
+  additional_details?: string;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

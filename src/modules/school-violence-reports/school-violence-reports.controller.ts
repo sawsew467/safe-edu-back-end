@@ -23,6 +23,7 @@ import { SchoolViolenceReportsService } from './school-violence-reports.service'
 import { CreateReportDto } from './dto/create-report.dto';
 import { UpdateReportStatusDto } from './dto/update-report-status.dto';
 import { UpdateEvidenceDto } from './dto/update-evidence.dto';
+import { UpdateAdditionalDetailsDto } from './dto/update-additional-details.dto';
 import { QueryReportDto } from './dto/query-report.dto';
 import { QueryEmergencyContactDto } from './dto/query-emergency-contact.dto';
 import { CreateEmergencyContactDto } from './dto/create-emergency-contact.dto';
@@ -42,7 +43,7 @@ export class SchoolViolenceReportsController {
 	) {}
 
 	@Post()
-	@UseGuards(OptionalJwtGuard)
+	@UseGuards(JwtAccessTokenGuard)
 	@ApiOperation({ summary: 'Tạo báo cáo bạo lực học đường' })
 	@UseInterceptors(FileInterceptor('evidence'))
 	async createReport(@Body() createReportDto: CreateReportDto) {
@@ -108,6 +109,24 @@ export class SchoolViolenceReportsController {
 			id,
 			updateEvidenceDto,
 			req.user?.userId,
+		);
+	}
+
+	@Patch(':id/additional-details')
+	@UseGuards(JwtAccessTokenGuard, RolesGuard)
+	@ApiOperation({
+		summary: 'Cập nhật thông tin chi tiết bổ sung cho báo cáo (Admin, Manager)',
+	})
+	async updateAdditionalDetails(
+		@Param('id') id: string,
+		@Body() updateAdditionalDetailsDto: UpdateAdditionalDetailsDto,
+		@Req() req: any,
+	) {
+		return this.schoolViolenceReportsService.updateAdditionalDetails(
+			id,
+			updateAdditionalDetailsDto,
+			req.user?.userId,
+			req.user?.organizationId,
 		);
 	}
 }
