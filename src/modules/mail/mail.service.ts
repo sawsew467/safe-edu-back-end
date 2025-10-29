@@ -133,14 +133,6 @@ export class MailService {
 		return `${baseUrl}/quan-tri/bao-cao-bao-luc/${reportId}`;
 	}
 
-	/**
-	 * Get support URL
-	 */
-	private getSupportUrl(): string {
-		const baseUrl =
-			this.configService.get<string>('APP_URL') || 'http://localhost:3000';
-		return `${baseUrl}/ho-tro`;
-	}
 
 	private translateStatus(status: string): string {
 		const statusMap: { [key: string]: string } = {
@@ -256,7 +248,7 @@ export class MailService {
 				),
 				organizationName: reportData.organizationName,
 				violenceTypes: this.translateViolenceTypes(reportData.violenceTypes),
-				supportUrl: this.getSupportUrl(),
+				supportUrl: this.getDashboardUrl(reportData.reportId),
 			});
 
 			await this.transporter.sendMail({
