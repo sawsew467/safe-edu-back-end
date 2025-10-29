@@ -110,6 +110,11 @@ export class CreateReportDto {
 	@IsString({ each: true })
 	evidence?: string[];
 
+	@ApiPropertyOptional({ description: 'Thông tin chi tiết bổ sung' })
+	@IsOptional()
+	@IsString()
+	additional_details?: string;
+
 	@ApiProperty({ description: 'ID tổ chức' })
 	@IsMongoId()
 	organizationId: string;

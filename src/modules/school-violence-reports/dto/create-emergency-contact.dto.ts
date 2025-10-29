@@ -1,5 +1,12 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsEmail, IsOptional, IsMongoId } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsMongoId, IsEnum } from 'class-validator';
+
+export enum EmergencyContactRoleEnum {
+	BOARD_OF_DIRECTORS = 'board-of-directors',
+	PRINCIPAL = 'principal',
+	VICE_PRINCIPAL = 'vice-principal',
+	STUDENT_AFFAIRS_OFFICER = 'student-affairs-officer',
+}
 
 export class CreateEmergencyContactDto {
 	@ApiProperty({ description: 'Tên liên hệ khẩn cấp' })
@@ -13,6 +20,14 @@ export class CreateEmergencyContactDto {
 	@ApiProperty({ description: 'Email' })
 	@IsEmail()
 	email: string;
+
+	@ApiProperty({
+		description: 'Vai trò của liên hệ khẩn cấp',
+		enum: EmergencyContactRoleEnum,
+		example: EmergencyContactRoleEnum.PRINCIPAL,
+	})
+	@IsEnum(EmergencyContactRoleEnum)
+	role: EmergencyContactRoleEnum;
 
 	@ApiPropertyOptional({ description: 'ID tổ chức (null = global)' })
 	@IsOptional()
