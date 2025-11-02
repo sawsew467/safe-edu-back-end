@@ -22,4 +22,11 @@ export class VisitController {
     return this.visitService.getVisitStatsLast7Days();
   }
 
+  @Get('stats/total')
+  @ApiOperation({ summary: 'Tổng lượt truy cập từ trước đến nay' })
+  async getTotalVisits() {
+    const total = await this.visitService.getTotalVisits();
+    return { total };
+  }
+
 }

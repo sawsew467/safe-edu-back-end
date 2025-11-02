@@ -20,7 +20,11 @@ export class VisitService {
         .findOne({ ipAddress })
         .sort({ createdAt: -1 });
 
-      if (!lastVisit || lastVisit.timestamp < fiveMinutesAgo) {
+  // Normalize possible timestamp field names: prefer `createdAt` (mongoose timestamps)
+  const lv: any = lastVisit as any;
+  const lastVisitTime = lv?.createdAt ?? lv?.created_at ?? lv?.timestamp;
+
+      if (!lastVisit || lastVisitTime < fiveMinutesAgo) {
         await this.visitModel.create({ ipAddress });
       }
     } catch (error) {
@@ -30,6 +34,22 @@ export class VisitService {
           message:
             'Có lỗi xảy ra, vui lòng thử lại sau',
         });
+    }
+  }
+
+  /**
+   * Tổng lượt truy cập từ trước đến nay
+   */
+  async getTotalVisits(): Promise<number> {
+    try {
+      const total = await this.visitModel.countDocuments({});
+      return total;
+    } catch (error) {
+      throw new BadRequestException({
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        error: error.message,
+        message: 'Có lỗi xảy ra, vui lòng thử lại sau',
+      });
     }
   }
 
