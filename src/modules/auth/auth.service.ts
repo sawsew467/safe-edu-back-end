@@ -360,6 +360,7 @@ export class AuthService {
 				email,
 				date_of_birth,
 				password,
+				class_name,
 			} = sign_up_with_std_dto;
 			const normalizedUsername = username.toLowerCase();
 			const student = await this.student_service.create({
@@ -371,6 +372,7 @@ export class AuthService {
 				username: normalizedUsername,
 				password,
 				organizationId,
+				class_name,
 			});
 
 			const refresh_token = this.generateRefreshToken({
