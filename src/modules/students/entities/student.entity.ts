@@ -38,6 +38,7 @@ export class Student extends BaseEntity {
 		password: string;
 		username: string;
 		email: string;
+		class_name?: string;
 	}) {
 		super();
 		this.first_name = Student?.first_name;
@@ -49,6 +50,7 @@ export class Student extends BaseEntity {
 		this.password = Student?.password;
 		this.username = Student?.username;
 		this.email = Student?.email;
+		this.class_name = Student?.class_name;
 	}
 
 	@Prop({
@@ -95,6 +97,14 @@ export class Student extends BaseEntity {
 		enum: GENDER,
 	})
 	gender: GENDER;
+
+	@Prop({
+		maxlength: 100,
+		set: (class_name: string) => {
+			return class_name?.trim();
+		},
+	})
+	class_name?: string;
 
 	@Prop()
 	@Exclude()

@@ -11,8 +11,9 @@ import {
 	HttpException,
 	HttpStatus,
 	Put,
+	UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
 
 // Inner imports
@@ -27,6 +28,7 @@ import { UpdateAdminDto } from './dto/update-admin.dto';
 import { Roles } from 'src/decorators/roles.decorator';
 import { RolesEnum } from 'src/enums/roles..enum';
 import { RolesGuard } from '@modules/auth/guards/roles.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -74,5 +76,34 @@ export class AdminController {
 	@ApiOperation({ summary: 'Set isActive true' })
 	async setIsActiveTrue(@Param('id') id: string) {
 		return await this.adminService.setActiveIsTrue(id);
+	}
+
+	@Post('import-excel')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiOperation({ summary: 'Import admins from Excel file (Admin only)' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'file',
+					format: 'binary',
+					description: 'File Excel (.xlsx, .xls)',
+				},
+			},
+		},
+	})
+	async importFromExcel(@UploadedFile() file: Express.Multer.File) {
+		if (!file) {
+			throw new HttpException(
+				{
+					message: 'File Excel là bắt buộc',
+					error: 'Bad Request',
+				},
+				HttpStatus.BAD_REQUEST,
+			);
+		}
+		return await this.adminService.importFromExcel(file);
 	}
 }

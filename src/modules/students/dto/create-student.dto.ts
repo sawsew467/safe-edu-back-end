@@ -30,6 +30,10 @@ export class CreateStudentDto {
 	@IsOptional()
 	date_of_birth?: Date;
 
+	@IsOptional()
+	@MaxLength(100, { message: 'Tên lớp không được quá 100 ký tự' })
+	class_name?: string;
+
 	@IsNotEmpty({ message: 'username không được để trống' })
 	@MaxLength(50)
 	username: string;

@@ -59,6 +59,7 @@ export class StudentsService {
 			password,
 			username,
 			email,
+			class_name,
 		} = createDto;
 		const normalizedUsername = username.toLowerCase();
 		// const existed_organization =
@@ -105,6 +106,7 @@ export class StudentsService {
 				password: hashedPassword,
 				email,
 				organizationId: new mongoose.Types.ObjectId(organizationId),
+				class_name,
 			});
 			return student;
 		}
@@ -117,6 +119,7 @@ export class StudentsService {
 				phone_number,
 				password: hashedPassword,
 				email,
+				class_name,
 			});
 			return student;
 		}
