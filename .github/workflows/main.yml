@@ -1,0 +1,60 @@
+name: Deploy Safe Edu API
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    uses: ./.github/workflows/docker-build-and-push.yml
+    secrets: inherit
+
+  setup-ssh:
+    needs: build-and-push
+    uses: ./.github/workflows/prepare-setup-ssh.yml
+    secrets: inherit
+
+  upload-env:
+    needs: setup-ssh
+    uses: ./.github/workflows/prepare-upload-env.yml
+    secrets: inherit
+
+  ghrc-login:
+    needs: upload-env
+    uses: ./.github/workflows/deploy-to-vps-login.yml
+    secrets: inherit
+
+  pull-image:
+    needs: ghrc-login
+    uses: ./.github/workflows/deploy-to-vps-pull-image.yml
+    secrets: inherit
+
+  docker-network:
+    needs: pull-image
+    uses: ./.github/workflows/deploy-to-vps-network.yml
+    secrets: inherit
+
+  stop-remove-containers:
+    needs: docker-network
+    uses: ./.github/workflows/deploy-to-vps-stop-remove.yml
+    secrets: inherit
+
+  write-env:
+    needs: stop-remove-containers
+    uses: ./.github/workflows/deploy-to-vps-write-env.yml
+    secrets: inherit
+
+  start-app:
+    needs: write-env
+    uses: ./.github/workflows/deploy-to-vps-start-app.yml
+    secrets: inherit
+
+  setup-nginx-ssl:
+    needs: start-app
+    uses: ./.github/workflows/deploy-to-vps-nginx-ssl.yml
+    secrets: inherit

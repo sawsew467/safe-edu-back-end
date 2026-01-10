@@ -1,0 +1,22 @@
+name: Prepare - Setup SSH Key
+
+on:
+  workflow_call:
+
+jobs:
+  setup-ssh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Decode and setup SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+          # Validate SSH key format
+          if ! head -1 id_ed25519 | grep -q "OPENSSH\|RSA\|EC\|DSA"; then
+            echo "❌ Invalid SSH key format"
+            exit 1
+          fi
+
+          echo "✅ SSH key configured successfully"

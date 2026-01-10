@@ -1,0 +1,34 @@
+name: Prepare - Upload Environment Variables
+
+on:
+  workflow_call:
+
+jobs:
+  upload-env:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Create directory and upload env file
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            mkdir -p /root/safe-edu-back-end
+            echo "✅ Directory created"
+
+      - name: Upload production env file
+        run: |
+          echo "${{ secrets.ENV_PRODUCTION }}" > .env.production
+          scp -i id_ed25519 -P ${{ secrets.VPS_PORT }} \
+            -o StrictHostKeyChecking=no \
+            .env.production \
+            root@${{ secrets.VPS_HOST }}:/root/safe-edu-back-end/.env
+          echo "✅ Environment file uploaded"

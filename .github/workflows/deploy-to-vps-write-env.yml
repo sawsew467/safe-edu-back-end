@@ -1,0 +1,28 @@
+name: Deploy to VPS - Write Environment Variables
+
+on:
+  workflow_call:
+
+jobs:
+  write-env:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Write environment file
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "📝 Writing environment file..."
+            cat > /root/safe-edu-back-end/.env << 'ENVEOF'
+            ${{ secrets.ENV_PRODUCTION }}
+            ENVEOF
+            echo "✅ Environment file written"

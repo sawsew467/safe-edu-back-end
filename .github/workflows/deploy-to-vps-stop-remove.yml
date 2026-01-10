@@ -1,0 +1,49 @@
+name: Deploy to VPS - Stop and Remove Containers
+
+on:
+  workflow_call:
+
+jobs:
+  stop-remove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Stop and remove existing containers
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "🛑 Stopping existing containers..."
+            docker stop safe-edu-api || true
+            docker rm safe-edu-api || true
+            echo "✅ Containers stopped and removed"
+
+  prune-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: stop-remove
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Prune old Docker images
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "🧹 Pruning unused Docker images..."
+            docker image prune -af --filter "until=24h" || true
+            echo "✅ Cleanup complete"

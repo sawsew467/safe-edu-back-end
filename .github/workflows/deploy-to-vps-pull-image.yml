@@ -1,0 +1,26 @@
+name: Deploy to VPS - Pull Docker Image
+
+on:
+  workflow_call:
+
+jobs:
+  pull-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Pull latest Docker image
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "📦 Pulling latest image..."
+            docker pull ghcr.io/${{ github.repository_owner }}/safe-edu-back-end:latest
+            echo "✅ Image pulled successfully"

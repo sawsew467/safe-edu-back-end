@@ -1,0 +1,36 @@
+name: Deploy to VPS - Setup Nginx and SSL
+
+on:
+  workflow_call:
+
+jobs:
+  setup-nginx-ssl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Upload Nginx setup script
+        run: |
+          scp -i id_ed25519 -P ${{ secrets.VPS_PORT }} \
+            -o StrictHostKeyChecking=no \
+            scripts/setup-nginx-ssl.sh \
+            root@${{ secrets.VPS_HOST }}:/root/safe-edu-back-end/setup-nginx-ssl.sh
+
+      - name: Setup Nginx and SSL
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "🚀 Running Nginx and SSL setup..."
+            chmod +x /root/safe-edu-back-end/setup-nginx-ssl.sh
+            /root/safe-edu-back-end/setup-nginx-ssl.sh

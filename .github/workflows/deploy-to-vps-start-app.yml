@@ -1,0 +1,58 @@
+name: Deploy to VPS - Start App Container
+
+on:
+  workflow_call:
+
+jobs:
+  start-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Decode SSH key
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY_BASE64 }}" | base64 -d > id_ed25519
+          chmod 600 id_ed25519
+
+      - name: Start Safe Edu API container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          port: ${{ secrets.VPS_PORT }}
+          key_path: id_ed25519
+          script: |
+            echo "🚀 Starting Safe Edu API container..."
+            docker rm -f safe-edu-api || true
+
+            docker run -d \
+              --name safe-edu-api \
+              --env-file /root/safe-edu-back-end/.env \
+              --network safe-edu-network \
+              --restart unless-stopped \
+              -p 4000:4000 \
+              ghcr.io/${{ github.repository_owner }}/safe-edu-back-end:latest
+
+            echo "⏳ Waiting for container to initialize..."
+            sleep 10
+
+            echo "🔧 Monitoring application startup..."
+
+            attempts=0
+            max_attempts=30
+
+            until docker logs safe-edu-api 2>&1 | grep -q "Nest application successfully started\|Listening on port"; do
+              if [ "$attempts" -ge "$max_attempts" ]; then
+                echo "❌ Reached maximum attempts ($max_attempts). The application did not become ready."
+                docker logs safe-edu-api --tail 50
+                exit 1
+              fi
+
+              echo "⏳ Still waiting for the app to be ready... ($((attempts + 1))/$max_attempts)"
+              attempts=$((attempts + 1))
+              sleep 5
+            done
+
+            echo "✅ Application is ready!"
+
+            echo "📜 Final container logs:"
+            docker logs safe-edu-api --tail 20
