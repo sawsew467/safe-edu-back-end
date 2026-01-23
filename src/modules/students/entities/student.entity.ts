@@ -55,7 +55,7 @@ export class Student extends BaseEntity {
 
 	@Prop({
 		required: true,
-		minlength: 2,
+		minlength: 1,
 		maxlength: 60,
 		set: (first_name: string) => {
 			return first_name.trim();
@@ -65,7 +65,7 @@ export class Student extends BaseEntity {
 
 	@Prop({
 		required: true,
-		minlength: 2,
+		minlength: 1,
 		maxlength: 60,
 		set: (last_name: string) => {
 			return last_name.trim();
