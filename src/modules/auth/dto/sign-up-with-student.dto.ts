@@ -49,6 +49,10 @@ export class SignUpWithStudentDto {
 	@IsNotEmpty({ message: 'Mật khẩu không được để trống' })
 	@IsStrongPassword({
 		minLength: 8,
+		minLowercase: 0,
+		minUppercase: 0,
+		minNumbers: 0,
+		minSymbols: 0,
 	})
 	password: string;
 }
