@@ -9,7 +9,7 @@ import * as moment from 'moment';
 export class StudentsRepository implements StudentsRepositoryInterface {
 	constructor(
 		@InjectModel(Student.name) private readonly student_Model: Model<Student>,
-	) { }
+	) {}
 	async findOne(condition: FilterQuery<Student>): Promise<Student | null> {
 		return await this.student_Model
 			.findOne(condition)
@@ -29,7 +29,7 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 		} catch (error) {
 			console.error('Error saving new Student:', error.message);
 			throw new BadRequestException(
-				'Failed to create Student. Please try again.',
+				'Thất bại khi tạo mới học sinh. Vui lòng kiểm tra lại dữ liệu.',
 			);
 		}
 	}
@@ -48,7 +48,8 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 	}
 
 	async getStudentWithRole(StudentId: string): Promise<Student | null> {
-		return await this.student_Model.findById(StudentId)
+		return await this.student_Model
+			.findById(StudentId)
 			.populate('role')
 			.populate('organizationId')
 			.exec();
@@ -92,7 +93,10 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 
 	async findByOrgId(organizationId: string): Promise<Student[]> {
 		console.log('OrganizationId:', organizationId);
-		console.log('Is Valid ObjectId:', mongoose.Types.ObjectId.isValid(organizationId));
+		console.log(
+			'Is Valid ObjectId:',
+			mongoose.Types.ObjectId.isValid(organizationId),
+		);
 
 		try {
 			const orgId = mongoose.Types.ObjectId.isValid(organizationId)
@@ -122,18 +126,18 @@ export class StudentsRepository implements StudentsRepositoryInterface {
 		}
 	}
 	async countAllStudents() {
-			const total = await this.student_Model.countDocuments().exec();
-	
-			const startOfMonth = moment().startOf('month').toDate();
-			const endOfMonth = moment().endOf('month').toDate();
-	
-			const monthlyRegistered = await this.student_Model.countDocuments({
-				created_at: { $gte: startOfMonth, $lte: endOfMonth },
-			});
-	
-			return {
-				total,
-				monthlyRegistered,
-			};
+		const total = await this.student_Model.countDocuments().exec();
+
+		const startOfMonth = moment().startOf('month').toDate();
+		const endOfMonth = moment().endOf('month').toDate();
+
+		const monthlyRegistered = await this.student_Model.countDocuments({
+			created_at: { $gte: startOfMonth, $lte: endOfMonth },
+		});
+
+		return {
+			total,
+			monthlyRegistered,
+		};
 	}
 }

@@ -27,8 +27,8 @@ export class CitizensService {
 		@Inject('StudentsRepositoryInterface')
 		private readonly studentsRepository: StudentsRepositoryInterface,
 		@InjectModel(Province.name)
-		private readonly provinceModel: Model<Province>
-	) { }
+		private readonly provinceModel: Model<Province>,
+	) {}
 
 	async setCurrentRefreshToken(
 		_id: string,
@@ -61,17 +61,22 @@ export class CitizensService {
 				date_of_birth,
 			} = createDto;
 
-
 			const normalizedUsername = username.toLowerCase();
-			const [existed_phone_number_student, existed_phone_number_student_citizen] =
-				await Promise.all([
-					await this.studentsRepository.findOneByCondition({ phone_number }),
-					await this.citizensRepository.findOneByCondition({ phone_number }),
-				]);
+			const [
+				existed_phone_number_student,
+				existed_phone_number_student_citizen,
+			] = await Promise.all([
+				await this.studentsRepository.findOneByCondition({ phone_number }),
+				await this.citizensRepository.findOneByCondition({ phone_number }),
+			]);
 			const [existed_student_username, existed_citizen_username] =
 				await Promise.all([
-					await this.studentsRepository.findOneByCondition({ normalizedUsername }),
-					await this.citizensRepository.findOneByCondition({ normalizedUsername }),
+					await this.studentsRepository.findOneByCondition({
+						username: normalizedUsername,
+					}),
+					await this.citizensRepository.findOneByCondition({
+						username: normalizedUsername,
+					}),
 				]);
 
 			if (existed_student_username || existed_citizen_username) {
@@ -105,8 +110,7 @@ export class CitizensService {
 					date_of_birth,
 				});
 				return citizen;
-			}
-			else {
+			} else {
 				const citizen = await this.citizensRepository.create({
 					first_name,
 					last_name,
@@ -118,17 +122,12 @@ export class CitizensService {
 				});
 				return citizen;
 			}
-
-
-
-
-			
 		} catch (error) {
 			throw new BadRequestException({
 				status: HttpStatus.BAD_REQUEST,
-				message: "Đã có lỗi xảy ra, vui lòng thử lại sau",
-				details: `Đã có lỗi xảy ra: ${error.message}`
-			})
+				message: 'Đã có lỗi xảy ra, vui lòng thử lại sau',
+				details: `Đã có lỗi xảy ra: ${error.message}`,
+			});
 		}
 	}
 
