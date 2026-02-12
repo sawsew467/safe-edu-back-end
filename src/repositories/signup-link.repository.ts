@@ -27,15 +27,11 @@ export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
 	async findOne(
 		condition: FilterQuery<SignUpLink>,
 	): Promise<SignUpLink | null> {
-		return await this.signUpLinkModel
-			.findOne(condition)
-			.exec();
+		return await this.signUpLinkModel.findOne(condition).exec();
 	}
 
 	async findById(id: string): Promise<SignUpLink | null> {
-		return await this.signUpLinkModel
-			.findById(id)
-			.exec();
+		return await this.signUpLinkModel.findById(id).exec();
 	}
 
 	async findActiveByOrganizationId(
@@ -46,11 +42,10 @@ export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
 			.find({
 				organization_id: organizationId,
 				is_revoked: false,
-				start_date: { $lte: currentDate },
 				expiration_date: { $gte: currentDate },
 				isActive: true,
 			})
-			.sort({ created_at: -1 })
+			.sort({ created_at: 1 })
 			.exec();
 	}
 
@@ -63,7 +58,10 @@ export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
 			.exec();
 	}
 
-	async revokeToken(id: string, revokedBy?: string): Promise<SignUpLink | null> {
+	async revokeToken(
+		id: string,
+		revokedBy?: string,
+	): Promise<SignUpLink | null> {
 		return await this.signUpLinkModel
 			.findByIdAndUpdate(
 				id,
