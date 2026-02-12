@@ -14,6 +14,11 @@ import { OrganizationsRepositoryInterface } from '@modules/organizations/interfa
 import { ERRORS_DICTIONARY } from 'src/constraints/error-dictionary.constraint';
 import { ManagerRepositoryInterface } from '@modules/manager/interfaces/manager.interface';
 import { stat } from 'fs';
+import { GenerateLinkSignUpDTO } from './dto/generate-link-sign-up.dto';
+import { JwtService } from '@nestjs/jwt';
+import { access_token_private_key } from 'src/constraints/jwt.constraint';
+import { SignUpLinkRepositoryInterface } from '@modules/organizations/interfaces/signup-link.interface';
+import { SignUpLink } from './entities/signup-link.entity';
 
 @Injectable()
 export class OrganizationsService {
@@ -22,6 +27,8 @@ export class OrganizationsService {
 		private readonly organizations_repository: OrganizationsRepositoryInterface,
 		@Inject('ManagerRepositoryInterface')
 		private readonly manager_repository: ManagerRepositoryInterface,
+		@Inject('SignUpLinkRepositoryInterface')
+		private readonly signup_link_repository: SignUpLinkRepositoryInterface,
 	) {}
 
 	async create(create_dto: CreateOrganizationDto): Promise<Organization> {
@@ -148,7 +155,210 @@ export class OrganizationsService {
 		}
 	}
 
+	async generateLinkSignUp(
+		organizationId: string,
+		generateLinkSignUpDto: GenerateLinkSignUpDTO,
+	): Promise<SignUpLink> {
+		if (!organizationId) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'OrganizationId is required',
+			});
+		}
+		const { startDate = new Date(), expirationDate } = generateLinkSignUpDto;
+
+		if (startDate && expirationDate && startDate >= expirationDate) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'Expiration date must be after start date',
+			});
+		}
+
+		const organization =
+			await this.organizations_repository.findById(organizationId);
+
+		if (!organization) {
+			throw new NotFoundException({
+				status: HttpStatus.NOT_FOUND,
+				message: `Organization with id ${organizationId} not found`,
+			});
+		}
+
+		// Check for overlapping active links
+		const overlappingLinks =
+			await this.signup_link_repository.findOverlappingActiveLinks(
+				organizationId,
+				startDate,
+				expirationDate,
+			);
+
+		if (overlappingLinks.length > 0) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message:
+					'Không thể tạo link mới vì đã tồn tại link đang hoạt động trong khoảng thời gian này',
+				details:
+					'Vui lòng kiểm tra lại khoảng thời gian bắt đầu và kết thúc của link đăng ký.',
+			});
+		}
+
+		// Save signup link to database
+		const signUpLink = await this.signup_link_repository.create({
+			organization_id: new mongoose.Types.ObjectId(organizationId),
+			start_date: startDate,
+			expiration_date: expirationDate,
+			is_revoked: false,
+		});
+
+		return signUpLink;
+	}
+
 	async countAllOrganizations(): Promise<number> {
 		return this.organizations_repository.countAll();
+	}
+
+	async getActiveSignUpLinks(organizationId: string): Promise<SignUpLink[]> {
+		if (!organizationId) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'OrganizationId is required',
+			});
+		}
+
+		const organization =
+			await this.organizations_repository.findById(organizationId);
+
+		if (!organization) {
+			throw new NotFoundException({
+				status: HttpStatus.NOT_FOUND,
+				message: `Organization with id ${organizationId} not found`,
+			});
+		}
+
+		return this.signup_link_repository.findActiveByOrganizationId(
+			organizationId,
+		);
+	}
+
+	async revokeSignUpLink(
+		linkId: string,
+		revokedBy?: string,
+	): Promise<SignUpLink> {
+		if (!linkId) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'LinkId is required',
+			});
+		}
+
+		const signUpLink = await this.signup_link_repository.findById(linkId);
+
+		if (!signUpLink) {
+			throw new NotFoundException({
+				status: HttpStatus.NOT_FOUND,
+				message: `Sign up link with id ${linkId} not found`,
+			});
+		}
+
+		if (signUpLink.is_revoked) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'Sign up link is already revoked',
+			});
+		}
+
+		const revokedLink = await this.signup_link_repository.revokeToken(
+			linkId,
+			revokedBy,
+		);
+
+		if (!revokedLink) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'Failed to revoke sign up link',
+			});
+		}
+
+		return revokedLink;
+	}
+
+	async getSignUpLinkDetail(linkId: string): Promise<SignUpLink> {
+		if (!linkId) {
+			throw new BadRequestException({
+				status: HttpStatus.BAD_REQUEST,
+				message: 'LinkId is required',
+			});
+		}
+
+		const signUpLink = await this.signup_link_repository.findById(linkId);
+
+		if (!signUpLink) {
+			throw new NotFoundException({
+				status: HttpStatus.NOT_FOUND,
+				message: `Sign up link with id ${linkId} not found`,
+			});
+		}
+
+		return signUpLink;
+	}
+
+	async validateSignUpLink(id: string): Promise<{
+		isValid: boolean;
+		organizationId?: string;
+		message: string;
+	}> {
+		if (!id) {
+			return {
+				isValid: false,
+				message: 'Token is required',
+			};
+		}
+
+		const signUpLink = await this.signup_link_repository.findById(id);
+
+		if (!signUpLink) {
+			return {
+				isValid: false,
+				message: 'Sign-up link not found',
+			};
+		}
+
+		if (signUpLink.is_revoked) {
+			return {
+				isValid: false,
+				message: 'Sign-up link has been revoked',
+			};
+		}
+
+		const currentDate = new Date();
+
+		if (currentDate < signUpLink.start_date) {
+			return {
+				isValid: false,
+				message: 'Sign-up link is not active yet',
+			};
+		}
+
+		if (currentDate > signUpLink.expiration_date) {
+			return {
+				isValid: false,
+				message: 'Sign-up link has expired',
+			};
+		}
+
+		if (!signUpLink.isActive) {
+			return {
+				isValid: false,
+				message: 'Sign-up link is not active',
+			};
+		}
+
+		const organizationId = signUpLink.organization_id?.toString();
+
+		return {
+			isValid: true,
+			organizationId,
+			message: 'Sign-up link is valid',
+		};
 	}
 }
