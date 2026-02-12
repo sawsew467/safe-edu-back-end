@@ -44,12 +44,17 @@ export class SignUpWithCitizenDto {
 	username: string;
 
 	@IsNotEmpty({ message: 'Mật khẩu không được để trống' })
-	@IsStrongPassword({
-		minLength: 8,
-		minLowercase: 0,
-		minUppercase: 0,
-		minNumbers: 0,
-		minSymbols: 0,
-	})
+	@IsStrongPassword(
+		{
+			minLength: 8,
+			minLowercase: 0,
+			minUppercase: 0,
+			minNumbers: 0,
+			minSymbols: 0,
+		},
+		{
+			message: 'Mật khẩu phải có ít nhất 8 ký tự',
+		},
+	)
 	password: string;
 }
