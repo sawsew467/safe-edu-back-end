@@ -74,14 +74,14 @@ export class AdminService {
 		if(existed_phone_number) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.ADMIN_PHONE_NUMBER_IS_EXIST,
-				details: 'Phone number already exist',
+				details: 'Số điện thoại đã tồn tại',
 			});
 		}
 
 		if(exsited_email) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.ADMIN_EMAIL_IS_EXIST,
-				details: 'Email already exist',
+				details: 'Email đã tồn tại',
 			});
 		}
 

@@ -12,5 +12,10 @@ export interface SignUpLinkRepositoryInterface {
 		organizationId: string,
 		startDate: Date,
 		expirationDate: Date,
+        is_created_by_admin?: boolean,
+	): Promise<SignUpLink[]>;
+	findAdminCreatedLinks(): Promise<SignUpLink[]>;
+	findWithCondition(
+		condition: FilterQuery<SignUpLink>,
 	): Promise<SignUpLink[]>;
 }

@@ -90,7 +90,7 @@ export class StudentsService {
 		) {
 			throw new BadRequestException({
 				message: ERRORS_DICTIONARY.STUDENT_PHONE_NUMBER_EXISTS,
-				details: 'Phone number already exist',
+				details: 'Số điện thoại đã tồn tại',
 			});
 		}
 
