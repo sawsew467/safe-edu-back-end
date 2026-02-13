@@ -49,6 +49,9 @@ export class SignUpLink extends BaseEntity {
 
 	@Prop({ default: null })
 	revoked_by: string;
+
+	@Prop({ default: false })
+	created_by_admin: boolean;
 }
 
 export const SignUpLinkSchema = SchemaFactory.createForClass(SignUpLink);

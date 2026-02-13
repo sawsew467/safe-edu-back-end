@@ -17,6 +17,7 @@ import { initializeAuditPlugin } from './plugins/audit-fields.plugin';
 import { RequestContextInterceptor } from './interceptors/request-context.interceptor';
 
 import { OrganizationsModule } from '@modules/organizations/organizations.module';
+import { SignupLinksModule } from '@modules/signup-links/signup-links.module';
 import { NewsModule } from '@modules/news/news.module';
 import { AdminModule } from '@modules/admin/admin.module';
 import { CategoriesModule } from '@modules/category/category.module';
@@ -91,6 +92,7 @@ import { MailModule } from '@modules/mail/mail.module';
 			inject: [ConfigService, RequestContextService],
 		}),
 		OrganizationsModule,
+		SignupLinksModule,
 		NewsModule,
 		TopicsModule,
 		CategoriesModule,

@@ -1,8 +1,8 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
-import { SignUpLink } from '@modules/organizations/entities/signup-link.entity';
-import { SignUpLinkRepositoryInterface } from '@modules/organizations/interfaces/signup-link.interface';
+import { SignUpLink } from '@modules/signup-links/entities/signup-link.entity';
+import { SignUpLinkRepositoryInterface } from '@modules/signup-links/interfaces/signup-link.interface';
 
 @Injectable()
 export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
@@ -79,12 +79,14 @@ export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
 		organizationId: string,
 		startDate: Date,
 		expirationDate: Date,
+		is_created_by_admin = false,
 	): Promise<SignUpLink[]> {
 		return await this.signUpLinkModel
 			.find({
 				organization_id: organizationId,
 				is_revoked: false,
 				isActive: true,
+				created_by_admin: is_created_by_admin,
 				$or: [
 					{
 						// New link starts during existing link period
@@ -103,6 +105,27 @@ export class SignUpLinkRepository implements SignUpLinkRepositoryInterface {
 					},
 				],
 			})
+			.exec();
+	}
+
+	async findAdminCreatedLinks(): Promise<SignUpLink[]> {
+		return await this.signUpLinkModel
+			.find({
+				created_by_admin: true,
+				isActive: true,
+			})
+			.populate('organization_id')
+			.sort({ created_at: -1 })
+			.exec();
+	}
+
+	async findWithCondition(
+		condition: FilterQuery<SignUpLink>,
+	): Promise<SignUpLink[]> {
+		return await this.signUpLinkModel
+			.find(condition)
+			.populate('organization_id')
+			.sort({ created_at: -1 })
 			.exec();
 	}
 }
