@@ -2,7 +2,7 @@
 
 set -e
 
-DOMAIN="api.safe-edu.site"
+DOMAIN="api.safeedu.site"
 APP_PORT=4000
 NGINX_CONF="/etc/nginx/sites-available/${DOMAIN}"
 NGINX_ENABLED="/etc/nginx/sites-enabled/${DOMAIN}"
@@ -90,7 +90,7 @@ else
   fi
 
   # Obtain SSL certificate
-  certbot --nginx -d ${DOMAIN} --non-interactive --agree-tos --email admin@safe-edu.site --redirect
+  certbot --nginx -d ${DOMAIN} --non-interactive --agree-tos --email admin@safeedu.site --redirect
 
   echo "✅ SSL certificate obtained and configured"
 fi
